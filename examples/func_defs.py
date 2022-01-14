@@ -24,12 +24,31 @@ from pycparser import c_ast, parse_file
 # locations of function definitions.
 class FuncDefVisitor(c_ast.NodeVisitor):
     def visit_FuncDef(self, node):
-        #all args
-        print('params', node.decl.type.args)
-        #all content about the declaration
-        print(node.decl.type.type)
-        print(node.decl.type.type.type.declname)
-        print(node.decl.type.type.type.type.names)
+        final_product = ""
+        #static or not
+        print(node.decl.storage)
+        #final_product += node.decl.storage
+        #this logic looks at the function declaration
+        if isinstance(node.decl.type.type, c_ast.PtrDecl):
+            print(node.decl.type.type.type.type.names)
+            print("*")
+            print(node.decl.type.type.type.declname)
+        else:
+            print(node.decl.type.type.type.names)
+            print(node.decl.type.type.declname)
+        #this logic looks at ALL arguments passed in function declaration 
+        if node.decl.type.args is not None:
+            for argument in range(len(node.decl.type.args.params)):
+                #print(node.decl.type.args.params[argument].type)
+                if isinstance(node.decl.type.args.params[argument].type, c_ast.PtrDecl):
+                    print(node.decl.type.args.params[argument].type.type.type.names)
+                    print("*")
+                else: 
+                    print(node.decl.type.args.params[argument].type.type.names)
+                print(node.decl.type.args.params[argument].name)
+        else:
+            print("no arguments")
+        #print(node.decl.type.type.type.type.names)
         print('%s at %s' % (node.decl.name, node.decl.coord))
 
 
