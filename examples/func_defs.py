@@ -26,30 +26,43 @@ class FuncDefVisitor(c_ast.NodeVisitor):
     def visit_FuncDef(self, node):
         final_product = ""
         #static or not
-        print(node.decl.storage)
+        #print(node.decl.storage)
+        if bool(node.decl.storage):
+            #print(node.decl.storage)
+            #print(type(node.decl.storage))
+            final_product += node.decl.storage[0] + " "
         #final_product += node.decl.storage
         #this logic looks at the function declaration
         if isinstance(node.decl.type.type, c_ast.PtrDecl):
-            print(node.decl.type.type.type.type.names)
-            print("*")
-            print(node.decl.type.type.type.declname)
+            #print(node.decl.type.type.type.type.names)
+            #print("*")
+            #print(node.decl.type.type.type.declname)
+            final_product += node.decl.type.type.type.type.names[0] + " *" + node.decl.type.type.type.declname
         else:
-            print(node.decl.type.type.type.names)
-            print(node.decl.type.type.declname)
-        #this logic looks at ALL arguments passed in function declaration 
+            #print(node.decl.type.type.type.names)
+            #print(node.decl.type.type.declname)
+            final_product += node.decl.type.type.type.names[0] + " " + node.decl.type.type.declname
+        #this logic looks at ALL arguments passed in function declaration
+        final_product += "("
         if node.decl.type.args is not None:
             for argument in range(len(node.decl.type.args.params)):
                 #print(node.decl.type.args.params[argument].type)
                 if isinstance(node.decl.type.args.params[argument].type, c_ast.PtrDecl):
-                    print(node.decl.type.args.params[argument].type.type.type.names)
-                    print("*")
+                    #print(node.decl.type.args.params[argument].type.type.type.names)
+                    final_product += node.decl.type.args.params[argument].type.type.type.names[0] + " " + "*"
+                    #print("*")
                 else: 
-                    print(node.decl.type.args.params[argument].type.type.names)
-                print(node.decl.type.args.params[argument].name)
-        else:
-            print("no arguments")
+                    #print(node.decl.type.args.params[argument].type.type.names)
+                    final_product +=  node.decl.type.args.params[argument].type.type.names[0] + " "
+                #print(node.decl.type.args.params[argument].name)
+                if node.decl.type.args.params[argument].name is not None:
+                    final_product += node.decl.type.args.params[argument].name
+                if argument != len(node.decl.type.args.params) - 1:
+                    final_product += ", "
+        final_product += ")"
         #print(node.decl.type.type.type.type.names)
-        print('%s at %s' % (node.decl.name, node.decl.coord))
+        #print(final_product)
+        print('%s at %s' % (final_product, node.decl.coord))
 
 
 def show_func_defs(filename):
