@@ -28,6 +28,8 @@ class FuncDefVisitor(c_ast.NodeVisitor):
         print('params', node.decl.type.args)
         #all content about the declaration
         print(node.decl.type.type)
+        print(node.decl.type.type.type.declname)
+        print(node.decl.type.type.type.type.names)
         print('%s at %s' % (node.decl.name, node.decl.coord))
 
 
