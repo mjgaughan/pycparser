@@ -24,6 +24,10 @@ from pycparser import c_ast, parse_file
 # locations of function definitions.
 class FuncDefVisitor(c_ast.NodeVisitor):
     def visit_FuncDef(self, node):
+        #all args
+        print('params', node.decl.type.args)
+        #all content about the declaration
+        print(node.decl.type.type)
         print('%s at %s' % (node.decl.name, node.decl.coord))
 
 
