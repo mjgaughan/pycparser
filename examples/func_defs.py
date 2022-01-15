@@ -26,44 +26,38 @@ class FuncDefVisitor(c_ast.NodeVisitor):
     def visit_FuncDef(self, node):
         final_product = ""
         #static or not
-        #print(node.decl)
         if bool(node.decl.storage):
-            #print(node.decl.storage)
-            #print(type(node.decl.storage))
             final_product += node.decl.storage[0] + " "
-        #final_product += node.decl.storage
         #this logic looks at the function declaration
+        #if the function is a pointer
         if isinstance(node.decl.type.type, c_ast.PtrDecl):
-            #print(node.decl.type.type.type.type.names)
-            #print("*")
-            #print(node.decl.type.type.type.declname)
             final_product += node.decl.type.type.type.type.names[0] + " *" + node.decl.type.type.type.declname
+        #if it isn't a pointer
         else:
-            #print(node.decl.type.type.type.names)
-            #print(node.decl.type.type.declname)
             final_product += node.decl.type.type.type.names[0] + " " + node.decl.type.type.declname
         #this logic looks at ALL arguments passed in function declaration
         final_product += "("
+        #if there are arguments
         if node.decl.type.args is not None:
             for argument in range(len(node.decl.type.args.params)):
-                #print(node.decl.type.args.params[argument].type)
+                #if an arg is a pointer
                 if isinstance(node.decl.type.args.params[argument].type, c_ast.PtrDecl):
-                    #print(node.decl.type.args.params[argument].type.type.type.names)
                     if isinstance(node.decl.type.args.params[argument].type.type.type, c_ast.TypeDecl):
                         final_product += node.decl.type.args.params[argument].type.type.type.type.names[0] + " *"
                     else:
                         final_product += node.decl.type.args.params[argument].type.type.type.names[0] + " " + "*"
-                    #print("*")
+                    #this is evaluating what type of pointer the argument is
                     if len(node.decl.type.args.params[argument].type.quals) != 0:
                         final_product += "* " + node.decl.type.args.params[argument].type.quals[0] + " "
                     if len(node.decl.type.args.params[argument].type.type.quals) != 0:
                         final_product += node.decl.type.args.params[argument].type.type.quals[0] + " * "
+                #if not a pointer
                 else: 
-                    #print(node.decl.type.args.params[argument].type.type.names)
                     final_product +=  node.decl.type.args.params[argument].type.type.names[0] + " "
-                #print(node.decl.type.args.params[argument].name)
+                #if the argument has a name
                 if node.decl.type.args.params[argument].name is not None:
                     final_product += node.decl.type.args.params[argument].name
+                #everything covered by the following logic is for functions passed as args and the nested implications
                 if isinstance(node.decl.type.args.params[argument].type.type, c_ast.FuncDecl):
                     final_product += node.decl.type.args.params[argument].type.type.type.type.names[0] + " "
                     final_product += "(*" +  node.decl.type.args.params[argument].name + ")("
@@ -75,11 +69,10 @@ class FuncDefVisitor(c_ast.NodeVisitor):
                             if node.decl.type.args.params[argument].type.type.args.params[nested_argument].name is not None:
                                     final_product += node.decl.type.args.params[argument].type.type.args.params[nested_argument].name
                     final_product += ")"
+                #formatting arg display
                 if argument < len(node.decl.type.args.params):
                     final_product += ", "
         final_product += ")"
-        #print(node.decl.type.type.type.type.names)
-        #print(final_product)
         print('%s at %s' % (final_product, node.decl.coord))
 
 
