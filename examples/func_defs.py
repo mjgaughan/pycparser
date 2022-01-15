@@ -26,7 +26,7 @@ class FuncDefVisitor(c_ast.NodeVisitor):
     def visit_FuncDef(self, node):
         final_product = ""
         #static or not
-        #print(node.decl.storage)
+        #print(node.decl)
         if bool(node.decl.storage):
             #print(node.decl.storage)
             #print(type(node.decl.storage))
@@ -49,15 +49,33 @@ class FuncDefVisitor(c_ast.NodeVisitor):
                 #print(node.decl.type.args.params[argument].type)
                 if isinstance(node.decl.type.args.params[argument].type, c_ast.PtrDecl):
                     #print(node.decl.type.args.params[argument].type.type.type.names)
-                    final_product += node.decl.type.args.params[argument].type.type.type.names[0] + " " + "*"
+                    if isinstance(node.decl.type.args.params[argument].type.type.type, c_ast.TypeDecl):
+                        final_product += node.decl.type.args.params[argument].type.type.type.type.names[0] + " *"
+                    else:
+                        final_product += node.decl.type.args.params[argument].type.type.type.names[0] + " " + "*"
                     #print("*")
+                    if len(node.decl.type.args.params[argument].type.quals) != 0:
+                        final_product += "* " + node.decl.type.args.params[argument].type.quals[0] + " "
+                    if len(node.decl.type.args.params[argument].type.type.quals) != 0:
+                        final_product += node.decl.type.args.params[argument].type.type.quals[0] + " * "
                 else: 
                     #print(node.decl.type.args.params[argument].type.type.names)
                     final_product +=  node.decl.type.args.params[argument].type.type.names[0] + " "
                 #print(node.decl.type.args.params[argument].name)
                 if node.decl.type.args.params[argument].name is not None:
                     final_product += node.decl.type.args.params[argument].name
-                if argument != len(node.decl.type.args.params) - 1:
+                if isinstance(node.decl.type.args.params[argument].type.type, c_ast.FuncDecl):
+                    final_product += node.decl.type.args.params[argument].type.type.type.type.names[0] + " "
+                    final_product += "(*" +  node.decl.type.args.params[argument].name + ")("
+                    for nested_argument in range(len(node.decl.type.args.params[argument].type.type.args.params)):
+                        if isinstance(node.decl.type.args.params[argument].type.type.args.params[nested_argument].type,  c_ast.PtrDecl):
+                            final_product += node.decl.type.args.params[argument].type.type.args.params[nested_argument].type.type.type.names[0] + "* "
+                        else:
+                            final_product += node.decl.type.args.params[argument].type.type.args.params[nested_argument].type.type.names[0] + " "
+                            if node.decl.type.args.params[argument].type.type.args.params[nested_argument].name is not None:
+                                    final_product += node.decl.type.args.params[argument].type.type.args.params[nested_argument].name
+                    final_product += ")"
+                if argument < len(node.decl.type.args.params):
                     final_product += ", "
         final_product += ")"
         #print(node.decl.type.type.type.type.names)
