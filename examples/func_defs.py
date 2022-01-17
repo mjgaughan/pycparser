@@ -79,8 +79,7 @@ class FuncDefVisitor(c_ast.NodeVisitor):
 def show_func_defs(filename):
     # Note that cpp is used. Provide a path to your own cpp or
     # make sure one exists in PATH.
-    ast = parse_file(filename, use_cpp=True,
-                     cpp_args=r'-Iutils/fake_libc_include')
+    ast = parse_file(filename, use_cpp=False)
 
     v = FuncDefVisitor()
     v.visit(ast)
